@@ -5,7 +5,7 @@ Cookbook-first reference for every Git and GitHub workflow I run. Safety rules â
 - **Live (styled HTML):** https://jayvee6.github.io/git-bible/
 - **Source (markdown):** [`Git & GitHub Bible.md`](./Git%20%26%20GitHub%20Bible.md)
 
-Built as a single self-contained HTML artifact in the spirit of Thariq Shihipar's [_The Unreasonable Effectiveness of HTML_](https://thariqs.github.io/html-effectiveness/). Theme: [sj-design](https://github.com/jayvee6/sj-design) **deep-space**.
+Built as a single self-contained HTML artifact in the spirit of Thariq Shihipar's [_The Unreasonable Effectiveness of HTML_](https://thariqs.github.io/html-effectiveness/). Theme: **sj-design** deep-space.
 
 ## Features
 
