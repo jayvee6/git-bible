@@ -1044,6 +1044,7 @@ git rebase --continue       <span class="comment"># if mid-rebase</span>
 git cherry-pick --continue  <span class="comment"># if mid-cherry-pick</span></code></pre>
     <h4>Tools that help</h4>
 <pre><code>git mergetool               <span class="comment"># 3-way merge tool (configurable)</span>
+git diff                    <span class="comment"># shows conflict hunks before resolving</span>
 git checkout --ours &lt;file&gt;  <span class="comment"># take your version wholesale</span>
 git checkout --theirs &lt;file&gt; <span class="comment"># take their version wholesale</span></code></pre>
     <div class="gotcha"><strong>Gotcha:</strong> during a <strong>rebase</strong>, "ours" and "theirs" are swapped relative to merge — <code>--ours</code> means the branch you're rebasing onto, <code>--theirs</code> means your commits. This trips everyone up.</div>
@@ -1408,19 +1409,37 @@ EOF
   if (input) {
     var targets = [];
     document.querySelectorAll('details.card').forEach(function (el) {
-      targets.push({ el: el, text: el.textContent.toLowerCase(), open: false });
+      targets.push({ el: el, text: el.textContent.toLowerCase() });
     });
     document.querySelectorAll('section table tbody tr').forEach(function (el) {
       targets.push({ el: el, text: el.textContent.toLowerCase() });
     });
 
+    // Snapshot of <details> open-state taken at the start of a search session,
+    // restored when the query is cleared so the user gets their pre-search view back.
+    var openSnapshot = null;
+    function snapshotOpenStates() {
+      var m = new Map();
+      targets.forEach(function (t) {
+        if (t.el.tagName === 'DETAILS') m.set(t.el, t.el.open);
+      });
+      return m;
+    }
+
     function apply(q) {
       q = q.trim().toLowerCase();
       if (!q) {
-        targets.forEach(function (t) { t.el.classList.remove('hidden'); });
+        targets.forEach(function (t) {
+          t.el.classList.remove('hidden');
+          if (openSnapshot && t.el.tagName === 'DETAILS') {
+            t.el.open = openSnapshot.get(t.el) || false;
+          }
+        });
+        openSnapshot = null;
         countEl.textContent = '';
         return;
       }
+      if (!openSnapshot) openSnapshot = snapshotOpenStates();
       var n = 0;
       targets.forEach(function (t) {
         if (t.text.indexOf(q) !== -1) {
@@ -1554,8 +1573,9 @@ EOF
     var left = r.left + r.width / 2 - tipW / 2;
     left = Math.max(8, Math.min(left, window.innerWidth - tipW - 8));
     var top = r.bottom + 8;
-    // Flip above if near bottom
-    if (top + 80 > window.innerHeight) top = r.top - tip.offsetHeight - 8;
+    // Flip above if near bottom — fall back to ~120px on first hover when offsetHeight is still 0
+    var th = tip.offsetHeight || 120;
+    if (top + th > window.innerHeight) top = r.top - th - 8;
     tip.style.left = left + 'px';
     tip.style.top = top + 'px';
     tip.style.maxWidth = tipW + 'px';
